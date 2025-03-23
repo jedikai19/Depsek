@@ -1,0 +1,25 @@
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+import openai
+
+# Вставь сюда свои ключи
+openai.api_key = "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"
+TELEGRAM_TOKEN = "7897989724:AAEG6YTCNoTMw2HRqApClmYgt2VPLg54Nz0"
+
+def handle_message(update: Update, context: CallbackContext):
+    try:
+        # Отправляем запрос к OpenAI
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": update.message.text}]
+        )
+        # Отправляем ответ в Telegram
+        update.message.reply_text(response.choices[0].message['content'])
+    except Exception as e:
+        update.message.reply_text(f"Ошибка: {e}")
+
+# Запуск бота
+updater = Updater(TELEGRAM_TOKEN)
+updater.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+updater.start_polling()
+updater.idle()
